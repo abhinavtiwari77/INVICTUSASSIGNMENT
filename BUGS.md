@@ -86,3 +86,13 @@ Swapped the labels and CSS classes so that a positive balance (`bal > 0.005`) co
 **What I changed:**
 * Opened `src/state/store.js` and modified the `loadState` function block.
 * Updated the retrieval sequence so that data read from `localStorage` is explicitly wrapped inside the `hydrate()` utility function (`return hydrate(JSON.parse(raw));`) before being handed off to the React application state.
+
+
+## Bug 9
+**How to reproduce:** Fill out the form fields under the "Add expense" section with a description, amount, and category. Click the "Save expense" button. Observe the form state after submission.
+
+**What is wrong:** The "Add expense" form fails to reset its input values after a successful submission. The local component state strings, numbers, and split tracking options remain frozen with the previous transaction's data. This forces users to manually delete, clear, and override fields text character-by-character just to add a subsequent expense item.
+
+**What I changed:**
+* Opened `src/components/AddExpenseForm.jsx` and located the submission callback block.
+* Appended explicit state setter hooks (`setDescription("")`, `setAmount("")`, etc.) immediately following the `onAdd()` execution line to automatically wipe the active inputs and restore clean initial state options.

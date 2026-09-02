@@ -64,7 +64,19 @@ export default function AddExpenseForm({ members, onAdd }) {
       date: new Date(date),
       category,
     });
+    setDescription("");
+    setAmount("");
+    setPaidBy(members[0]?.id ?? "");
+    setDate("2026-03-16");
+    setCategory("Food");
+    setSplitType("equal");
+    
+    const allMemberIds = members.map((m) => m.id);
+    setSplitWith(allMemberIds);
+    setPercents(evenPercents(allMemberIds));
   }
+  
+  
 
   return (
     <section className="card">
