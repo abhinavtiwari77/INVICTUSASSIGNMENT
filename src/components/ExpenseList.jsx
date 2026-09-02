@@ -73,8 +73,8 @@ export default function ExpenseList({
             key={index}
             expense={expense}
             memberMap={memberMap}
-            onDelete={() => onDeleteAt(index)}
-            onSaveAmount={(amount) => onUpdateAt(index, { amount })}
+            onDelete={() => onDelete(expense)}
+            onSaveAmount={(amount) => onUpdate(expense, { amount })}
           />
         ))
       )}

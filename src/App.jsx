@@ -33,7 +33,7 @@ export default function App() {
     return state.expenses.filter((e) => {
       if (q && !e.description.toLowerCase().includes(q)) return false;
       if (category !== "All" && e.category !== category) return false;
-      if (paidBy !== "" && e.paidBy !== paidBy) return false;
+      if (paidBy !== "" && String(e.paidBy) !== String(paidBy)) return false;
       return true;
     });
   }, [state.expenses, query, category, paidBy]);
@@ -93,10 +93,8 @@ export default function App() {
           <ExpenseList
             expenses={filtered}
             members={state.members}
-            onDeleteAt={(index) => dispatch({ type: "DELETE_EXPENSE", index })}
-            onUpdateAt={(index, patch) =>
-              dispatch({ type: "UPDATE_EXPENSE", index, patch })
-            }
+            onDelete={(expense) => dispatch({ type: "DELETE_EXPENSE", id: expense.id })}
+            onUpdate={(expense, patch) => dispatch({ type: "UPDATE_EXPENSE", id: expense.id, patch })}
           />
         </div>
         <div className="stack">
