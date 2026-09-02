@@ -56,3 +56,24 @@ Swapped the labels and CSS classes so that a positive balance (`bal > 0.005`) co
 **What I changed:** 
 * Rewrote `splitEqual` in `src/lib/money.js` to track the running distributed total (`assigned`). It assigns the standard split value to everyone except the very last person, who receives the exact remaining balance (`amount - assigned`), absorbing any fractional remainder.
 * Rewrote `splitByPercent` in `src/lib/money.js` using a similar approach. The last person in the entries array automatically receives the remaining absolute balance to guarantee that the sum of the individual shares adds up precisely to the total bill amount.
+
+
+## Bug 6
+**How to reproduce:** Choose a specific group member from the "Paid by" dropdown select input in the Filter card panel. Check the expense items list.
+
+**What is wrong:** The app displays "No expenses match these filters" even when expenses matching that person exist. This happens due to a data-type mismatch in `src/App.jsx`. The HTML `<select>` element captures the user selection choice value as a string type (e.g., `"4"`), whereas the database seed array tracks the `e.paidBy` attribute as a number type (e.g., `4`). Doing a strict inequality evaluation (`e.paidBy !== paidBy`) evaluates to true for every item and incorrectly filters out valid entries.
+
+**What I changed:**
+* Opened `src/App.jsx` and updated the filtering conditional statement block.
+* Wrapped both parts of the comparison statement in standard type constructor methods (`String(e.paidBy) !== String(paidBy)`) to safely neutralize type inequality bugs.
+
+## Bug 7
+**How to reproduce:** Use the search filter or category filters to narrow down the expense list. Try to delete or edit/update an expense while the filter is active. 
+
+**What is wrong:** The application deletes or updates the wrong expense when a filter is active. The application passes a filtered index from `ExpenseList.jsx` back to `App.jsx`, which then uses that index directly against the unfiltered, original `state.expenses` array. This results in data corruption as actions are performed on mismatched items. Additionally, using `key={index}` instead of a unique ID in the React `.map()` loop causes rendering updates to break.
+
+**What I changed:**
+* Refactored the delete and update handlers in `src/App.jsx` and `src/components/ExpenseList.jsx` to pass the unique `expense.id` or the whole `expense` object instead of an array index.
+* Updated the reducer action handlers (`DELETE_EXPENSE` and `UPDATE_EXPENSE`) in `src/store/store.js` (or your store file) to look up and modify elements by matching their unique IDs (`e.id !== action.id`) using `.filter()` and `.map()`.
+* Changed the list rendering React key assignment from `key={index}` to a stable `key={expense.id}` within the expense map statement.
+
