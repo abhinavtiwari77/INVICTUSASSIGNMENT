@@ -46,3 +46,13 @@ Swapped the labels and CSS classes so that a positive balance (`bal > 0.005`) co
 **What I changed:**
 * Updated the `else` branch inside the settlement loop in `src/lib/settle.js`.
 * Added logic to push a valid payment object containing the sender, recipient, names, and exact matching amount into the `transfers` array before shifting the pointers forward.
+
+
+## Bug 5
+**How to reproduce:** Log an expense with an amount that cannot be cleanly divided (e.g., ₹100 split equally among 3 people, or a ₹20 bill split using custom percentages like 33.33%, 33.33%, and 33.34%). Check the total sum of the split portions.
+
+**What is wrong:** The app loses or invents pennies/paise due to standard floating-point rounding errors. Splitting ₹100 three ways results in ₹33.33 each, losing ₹0.01 from the total (₹99.99). Conversely, percentage splits like 33.33% of ₹20 can invent money (totaling ₹20.01). This directly violates the rule that portions must perfectly match the original bill total without losing or creating money.
+
+**What I changed:** 
+* Rewrote `splitEqual` in `src/lib/money.js` to track the running distributed total (`assigned`). It assigns the standard split value to everyone except the very last person, who receives the exact remaining balance (`amount - assigned`), absorbing any fractional remainder.
+* Rewrote `splitByPercent` in `src/lib/money.js` using a similar approach. The last person in the entries array automatically receives the remaining absolute balance to guarantee that the sum of the individual shares adds up precisely to the total bill amount.
