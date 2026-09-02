@@ -19,9 +19,11 @@ export function loadState(seed) {
       localStorage.setItem(KEY, JSON.stringify(initial));
       return initial;
     }
-    return JSON.parse(raw);
+    return hydrate(JSON.parse(raw));
   } catch {
-    return hydrate(seed);
+    const initial = hydrate(seed);
+    localStorage.setItem(KEY, JSON.stringify(initial));
+    return initial;
   }
 }
 

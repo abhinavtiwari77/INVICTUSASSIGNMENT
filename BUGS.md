@@ -77,3 +77,12 @@ Swapped the labels and CSS classes so that a positive balance (`bal > 0.005`) co
 * Updated the reducer action handlers (`DELETE_EXPENSE` and `UPDATE_EXPENSE`) in `src/store/store.js` (or your store file) to look up and modify elements by matching their unique IDs (`e.id !== action.id`) using `.filter()` and `.map()`.
 * Changed the list rendering React key assignment from `key={index}` to a stable `key={expense.id}` within the expense map statement.
 
+
+## Bug 8
+**How to reproduce:** Add a few expenses to the app, refresh the browser window, and look closely at the list layout. Try to sort the items or check if the formatting fails.
+
+**What is wrong:** The app fails to convert dates back into native JavaScript Date objects when reading data from browser memory. While `loadState` runs a helper called `hydrate()` on the initial sample data, it completely bypasses it when pulling saved data out of `localStorage`. Because `JSON.parse()` leaves all transaction dates as plain text strings, it breaks any component math that relies on date structures.
+
+**What I changed:**
+* Opened `src/state/store.js` and modified the `loadState` function block.
+* Updated the retrieval sequence so that data read from `localStorage` is explicitly wrapped inside the `hydrate()` utility function (`return hydrate(JSON.parse(raw));`) before being handed off to the React application state.
